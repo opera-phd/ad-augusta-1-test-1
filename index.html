@@ -13,25 +13,50 @@
     /* Stiluri personalizate pentru aspectul vizual */
         /* Configurare de bază pentru fundal și font */
         /* înlocuite ca să migreze spre centru */
-        body { 
-            margin: 0; 
-            overflow: hidden; 
-            background-color: #000000; 
-            font-family: 'Inter', sans-serif;
-            /* until we move everything to Ad Augusta platform, we can use this background image as a placeholder for the immersive environment */
-            background-image: url('https://opera-phd.org/wp-content/uploads/2025/12/PKG-2-1920-black.jpg');
-            background-size: cover; 
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-        /* Configurare pentru containerul graficului 3D și panourile de informații */
-        #3d-graph { width: 100vw; height: 100vh; }
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
-        }
+       html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: #000;              /* black letterbox */
+  font-family: 'Inter', sans-serif;
+
+  display: flex;                 /* center the stage */
+  align-items: center;
+  justify-content: center;
+}
+
+/* The “stage” keeps your composition centered */
+#stage {
+  position: relative;
+
+  /* Choose the aspect ratio you want your composition to keep */
+  aspect-ratio: 16 / 9;
+
+  /* Fill as much as possible, but preserve the ratio */
+  width: 100vw;
+  height: 100vh;
+  max-width: calc(100vh * 16 / 9);
+  max-height: calc(100vw * 9 / 16);
+
+  background-image: url('https://opera-phd.org/wp-content/uploads/2025/12/PKG-2-1920-black.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Make both the UI overlay and the 3D canvas fill the stage */
+#ui-layer,
+#3d-graph {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
         .close-btn { transition: all 0.2s; cursor: pointer; pointer-events: auto; }
         .close-btn:hover { color: #ef4444; transform: scale(1.1); }
 
@@ -386,4 +411,5 @@
         window.toggleRotation = () => { ctrl.autoRotate = !ctrl.autoRotate; document.getElementById('rotation-btn').innerText = ctrl.autoRotate ? "[ Stop Rotație ]" : "[ Start Rotație ]"; };
     </script>
 </body>
+
 </html>
