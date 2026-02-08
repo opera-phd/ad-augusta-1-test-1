@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Definirea cadrului de lucru -->
+    <title>Sisteme PKM - Model Dual-Tetraedral în Câmp Gravitațional Semantic</title>
+    <!-- Bibliotecile externe de bază -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/3d-force-graph@1.73.1/dist/3d-force-graph.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+    /* Stiluri personalizate pentru aspectul vizual */
+        /* Configurare de bază pentru fundal și font */
+        /* înlocuite ca să migreze spre centru */
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #000000; 
+            font-family: 'Inter', sans-serif;
+            /* until we move everything to Ad Augusta platform, we can use this background image as a placeholder for the immersive environment */
+            background-image: url('https://opera-phd.org/wp-content/uploads/2025/12/PKG-2-1920-black.jpg');
+            background-size: cover; 
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+        /* Configurare pentru containerul graficului 3D și panourile de informații */
+        #3d-graph { width: 100vw; height: 100vh; }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+        }
+        .close-btn { transition: all 0.2s; cursor: pointer; pointer-events: auto; }
+        .close-btn:hover { color: #ef4444; transform: scale(1.1); }
+
+        
+        /* Arhitectură vizuală fixă */
+        .infocard-permanent, .infocard-dynamic {
+            width: 303px !important; 
+            padding: 16px !important;
+            box-sizing: border-box;
+        }
+        .content-width {
+            width: 271px !important;
+            margin: 0 auto;
+        }
+        .header-image-fixed {
+            width: 271px !important;
+            height: auto;
+            display: block;
+            border: none !important;
+        }
+        
+        .link-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+            padding: 5px 12px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #d1d5db;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .link-pill:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #fcdb9e;
+            color: #fff;
+        }
+
+        #card-body ul {
+            list-style-type: disc;
+            padding-left: 1.2rem;
+            margin-top: 0.5rem;
+        }
+        #card-body li {
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="absolute top-0 left-0 z-10 w-full h-full pointer-events-none flex flex-col justify-between p-8">
+        <!-- ================== -->
+        <!-- Infocard Permanent -->
+        <!-- ================== -->
+        <div class="pointer-events-auto w-fit">
+            <div class="glass-panel rounded-xl infocard-permanent text-white mb-4">
+                <div class="content-width">
+                    <h1 class="text-[17px] font-bold tracking-tight leading-[1.25] mb-4">
+                        Sisteme performante de gestiunea cunoașterii și cercetare academică
+                    </h1>
+                    <img src="https://opera-phd.org/wp-content/uploads/2026/02/antet-mic-site.jpg" 
+                         alt="Antet site" 
+                         class="header-image-fixed rounded-sm shadow-md"
+                         onerror="this.style.display='none'">
+                    <div class="mt-4">
+                        <p class="text-[13.5px] font-semibold text-yellow-400 opacity-95 tracking-[-0.042em] whitespace-nowrap overflow-hidden">
+                            Ad Augusta - Universitatea Ovidius, Constanța
+                        </p>
+                    </div>
+                    <div class="border-t border-white/10 pt-4 mt-4">
+                        <p class="text-[11px] text-gray-300 leading-normal italic mb-2">
+                            Modulul-pivot al sesiunii interactive de instruire.
+                        </p>
+                        <p class="text-[9px] text-gray-500 font-mono tracking-[0.2em] uppercase opacity-80">
+                            12 februarie 2026
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================ -->
+        <!-- Infocard Dinamic -->
+        <!-- ================ -->
+        <div id="info-card" class="pointer-events-auto w-fit transition-all duration-500 transform translate-x-[-120%] opacity-0">
+            <div class="glass-panel rounded-xl infocard-dynamic text-white relative border-l-2 border-yellow-500/50">
+                <button onclick="hideInfoCard(event)" class="absolute top-4 right-4 text-gray-400 close-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+                <div class="content-width">
+                    <h2 id="card-title" class="text-[18px] font-bold tracking-tight text-white mb-1">Titlu</h2>
+                    <p class="text-[9px] text-gray-500 font-mono tracking-widest uppercase mb-3">Concept Principal</p>
+                    <div class="border-t border-white/10 my-3"></div>
+                    <div id="card-body" class="text-[12px] text-gray-300 leading-relaxed space-y-2 mb-4"></div>
+                    <div class="border-t border-white/10 pt-4 mt-2">
+                        <p class="text-[9px] text-gray-500 font-mono tracking-widest uppercase mb-3">Conexiuni</p>
+                        <div id="card-links" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --------------------------------------- -->
+        <!-- Butoane control cameră și rotație scenă -->
+        <!-- --------------------------------------- -->
+        <div class="pointer-events-auto flex gap-3">
+            <button onclick="resetCamera()" class="glass-panel px-5 py-2.5 rounded-lg text-white text-[11px] hover:bg-white/10 font-mono tracking-widest uppercase transition-colors">Centrare</button>
+            <button id="rotation-btn" onclick="toggleRotation()" class="glass-panel px-5 py-2.5 rounded-lg text-white text-[11px] hover:bg-white/10 font-mono tracking-widest uppercase text-nowrap transition-colors">Stop Rotație</button>
+        </div>
+    </div>
+
+    <div id="3d-graph"></div>
+
+    <script>
+        const GOLD_COLOR = '#fcdb9e'; // Culoarea aurie pentru noduri
+        const LINK_LABEL_COLOR = '#82fff2'; // Culoarea pentru etichetele relațiilor semantice
+        const SPHERE_RADIUS = 75; 
+        const NUCLEUS_RADIUS = 20; 
+
+        const coords = {
+        /* Coordonate nodurilor în spațiul 3D pentru a forma structura dual-tetraedrală */
+        /* Atenție că verticala nu e z... e y la ei */
+            nadir: { x: 0, y: -180, z: 0 }, // nodul 1, evoluția
+            base1: { x: 150, y: 0, z: 0 }, // 2, topologia
+            base2: { x: -75, y: 0, z: 130 }, // 3, metodele și instrumentele
+            base3: { x: -75, y: 0, z: -130 }, // 4, fluxul de lucru
+            zenith: { x: 0, y: 180, z: 0 }, // 5, principiile fundamentale
+            nadirExt: { x: 0, y: -216, z: 0 }, // nod virtual pentru extinderea relației verticale
+            zenithExt: { x: 0, y: 216, z: 0 } // nod virtual pentru extinderea relației verticale
+        };
+
+        const graphData = {
+            nodes: [
+                { id: 1, name: "Evoluția", fx: coords.nadir.x, fy: coords.nadir.y, fz: coords.nadir.z, rows: ["Evoluția"], desc: "Analiza traiectoriei istorice și a mutațiilor paradigmatice în gestiunea cunoașterii.", links: ["Link 1", "Link 2", "Link 3"] },
+                { id: 2, name: "Topologia", fx: coords.base1.x, fy: coords.base1.y, fz: coords.base1.z, rows: ["Topologia"], desc: "<ul><li><strong>Zettelkasten</strong>: Literaturzettel, Folgezettel, note temporare, Register</li><li><strong>PARA</strong> (Tiago Forte)</li><li><strong>ACE</strong> (Nick Milo)</li></ul>", links: ["Link 1", "Link 2", "Link 3"] },
+                { id: 3, name: "Metodele și instrumentele", fx: coords.base2.x, fy: coords.base2.y, fz: coords.base2.z, rows: ["Metodele și", "instrumentele"], desc: "Sisteme operaționale de tip Personal Knowledge Management (PKM) și metodologii avansate de indexare.", links: ["Link 1", "Link 2", "Link 3"] },
+                { id: 4, name: "Fluxul de lucru", fx: coords.base3.x, fy: coords.base3.y, fz: coords.base3.z, rows: ["Fluxul de", "lucru"], desc: "<ul><li>Luhman, importanța procesului</li><li><strong>CODE</strong> (Tiago Forte)</li><li><strong>ARC</strong> (Nick Milo)</li><li><strong>ABC</strong> (Acquire, Build, Create)</li></ul>", links: ["Link 1", "Link 2", "Link 3"] },
+                { id: 5, name: "Principiile fundamentale", fx: coords.zenith.x, fy: coords.zenith.y, fz: coords.zenith.z, rows: ["Principiile", "fundamentale"], desc: "Axiomele de bază și pilonii etici ai cercetării academice contemporane în era AI.", links: ["Link 1", "Link 2", "Link 3"] },
+                { id: 8, fx: coords.nadirExt.x, fy: coords.nadirExt.y, fz: coords.nadirExt.z, isVirtual: true },
+                { id: 9, fx: coords.zenithExt.x, fy: coords.zenithExt.y, fz: coords.zenithExt.z, isVirtual: true }
+            ],
+            links: [
+                { source: 1, target: 2, type: "structural" }, { source: 1, target: 3, type: "structural" }, { source: 1, target: 4, type: "structural" },
+                { source: 5, target: 2, type: "structural" }, { source: 5, target: 3, type: "structural" }, { source: 5, target: 4, type: "structural" },
+                { source: 2, target: 3, type: "structural" }, { source: 3, target: 4, type: "structural" }, { source: 4, target: 2, type: "structural" },
+                
+                // Relația verticală principală extinsă, "formare"
+                { source: 8, target: 9, type: "semantic", curve: 0, isExtended: true, label: "formare" },
+                
+                // Relații Semantice de la Nadir către bază
+                { source: 1, target: 2, type: "semantic", curve: 0.48, label: "progresie" },
+                { source: 1, target: 3, type: "semantic", curve: 0.48, label: "progresie" },
+                { source: 1, target: 4, type: "semantic", curve: 0.48, label: "progresie" },
+                
+                // Relații de la Metode către restul bazei
+                { source: 3, target: 2, type: "semantic", curve: 0.48, label: "geneză" },
+                { source: 3, target: 4, type: "semantic", curve: 0.48, label: "geneză" },
+                
+                // Relații de la Zenith către bază
+                { source: 5, target: 2, type: "semantic", curve: 0.48, label: "determinare" },
+                { source: 5, target: 3, type: "semantic", curve: 0.48, label: "determinare" },
+                { source: 5, target: 4, type: "semantic", curve: 0.48, label: "determinare" },
+                
+                // Codeterminare între Topologie și Flux (Sarcina atribuită o singură dată pentru lizibilitate)
+                { source: 2, target: 4, type: "semantic", curve: 0.48, isDouble: true, label: "codeterminare" },
+                { source: 4, target: 2, type: "semantic", curve: 0.48, isDouble: true }
+            ]
+        };
+
+        const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
+            .graphData(graphData)
+            .backgroundColor('rgba(0,0,0,0)')
+            .showNavInfo(false)
+            .enableNodeDrag(false)
+            .nodeThreeObject(node => {
+                if (node.isVirtual) return new THREE.Group();
+                const group = new THREE.Group();
+                const core = new THREE.Mesh(new THREE.SphereGeometry(NUCLEUS_RADIUS, 32, 32), new THREE.MeshBasicMaterial({ color: GOLD_COLOR, transparent: false, opacity: 1.0 }));
+                core.renderOrder = 1;
+                group.add(core);
+
+                const layerCount = 16;
+                for (let i = 1; i <= layerCount; i++) {
+                    const r = NUCLEUS_RADIUS + (i * (SPHERE_RADIUS - NUCLEUS_RADIUS) / layerCount);
+                    const layer = new THREE.Mesh(new THREE.SphereGeometry(r, 32, 32), new THREE.MeshLambertMaterial({ color: GOLD_COLOR, transparent: true, opacity: 0.04 + 0.20 * Math.pow(1 - (i-1)/15, 0.5), depthWrite: false }));
+                    layer.renderOrder = 2;
+                    group.add(layer);
+                }
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 1024; canvas.height = 512;
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#ffffff'; 
+                node.rows.forEach((row, idx) => {
+                    ctx.font = `bold ${(idx === 1 && (node.id === 3 || node.id === 4)) ? 70 : 100}px Inter`;
+                    ctx.fillText(row, 512, node.rows.length === 1 ? 256 : (256 - 60 + (idx * 120)));
+                });
+
+                const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true, opacity: 0.95, depthTest: false, depthWrite: false }));
+                sprite.scale.set(300, 150, 1);
+                sprite.renderOrder = 100;
+                group.add(sprite);
+                return group;
+            })
+            /* =============================================== */
+            /*                   RELAȚIILE                     */
+            /* =============================================== */
+            /* Configurarea legăturilor structurale, ajutătoare, cu atribute vizuale distincte */
+            .linkWidth(link => link.type === "structural" ? 3 : 0)
+            .linkColor(link => link.type === "structural" ? "rgba(255, 255, 255, 0.9)" : "transparent")
+            /* Configurarea relațiilor semantice cu atribute vizuale distincte */
+            .linkThreeObject(link => {
+                if (link.type !== "semantic") return null;
+                const group = new THREE.Group();
+                const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.4, side: THREE.DoubleSide, depthWrite: false });
+                
+                group.add(new THREE.Mesh(new THREE.BufferGeometry(), mat), new THREE.Mesh(new THREE.BufferGeometry(), mat));
+                if (link.isExtended) group.add(new THREE.Mesh(new THREE.BufferGeometry(), mat), new THREE.Mesh(new THREE.BufferGeometry(), mat));
+                
+                if (link.label) {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 1024; canvas.height = 256; 
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    // Font 90px (80% din valoarea anterioara de 112px)
+                    ctx.font = 'bold 90px Inter';
+                    ctx.fillStyle = LINK_LABEL_COLOR;
+                    ctx.fillText(link.label, 512, 128);
+                    
+                    const labelSprite = new THREE.Sprite(new THREE.SpriteMaterial({ 
+                        map: new THREE.CanvasTexture(canvas), 
+                        transparent: true, 
+                        opacity: 1.0, 
+                        depthTest: false, 
+                        depthWrite: false 
+                    }));
+                    labelSprite.scale.set(205, 51, 1);
+                    labelSprite.renderOrder = 120; 
+                    group.add(labelSprite);
+                }
+                return group;
+            })
+            .linkPositionUpdate((threeObj, { start, end }, link) => {
+                if (link.type !== "semantic") return false;
+                threeObj.userData.vStart = new THREE.Vector3(start.x, start.y, start.z);
+                threeObj.userData.vEnd = new THREE.Vector3(end.x, end.y, end.z);
+                updateLinkGeometry(threeObj, link);
+                return true;
+            });
+        /* ===================================================================================================================== */
+        /* Funcție pentru actualizarea dinamică a geometriei legăturilor semantice, inclusiv curbele și poziționarea etichetelor */
+        /* ===================================================================================================================== */    
+        function updateLinkGeometry(threeObj, link) {
+            const vS = threeObj.userData.vStart, vE = threeObj.userData.vEnd;
+            if (!vS || !vE) return;
+            const dist = vS.distanceTo(vE), center = new THREE.Vector3().addVectors(vS, vE).multiplyScalar(0.5);
+            const cf = link.isExtended ? 0 : (link.curve || 0.48);
+            const cp = cf === 0 ? center : new THREE.Vector3().copy(center).addScaledVector(new THREE.Vector3().copy(center).normalize(), dist * cf);
+            const curve = new THREE.QuadraticBezierCurve3(vS, cp, vE);
+            const midPoint = curve.getPoint(0.5);
+            const seg = link.isExtended ? 1.0 : 0.5, sT = 0.5 - seg/2;
+            const res = 24;
+            const pts = []; for (let i = 0; i <= res; i++) pts.push(curve.getPoint(sT + (i/res)*seg));
+            const camPos = new THREE.Vector3(); Graph.camera().getWorldPosition(camPos);
+            const tangentM = new THREE.Vector3().subVectors(vE, vS).normalize();
+            let b1, b2;
+            if (link.isExtended) { b1 = new THREE.Vector3(1, 0, 0); b2 = new THREE.Vector3(0, 0, 1); }
+            else {
+                const vectorToC = new THREE.Vector3().subVectors(camPos, center).normalize();
+                b1 = new THREE.Vector3().crossVectors(tangentM, vectorToC).normalize();
+                if (b1.length() < 0.1) b1.set(1, 0, 0);
+            }
+            /* Funcție internă pentru actualizarea geometriei fiecărui segment al legăturii semantice, inclusiv partea extinsă */
+            function upd(idx, binorm, isH) {
+                const m = threeObj.children[idx];
+                if (!isH) {
+                    const v = [];
+                    for (let i = 0; i <= res; i++) {
+                        const t = i/res;
+                        let hw = link.isDouble ? (t <= 0.5 ? 10 - 10*t : 5 + 10*(t-0.5)) : (t <= 0.5 ? 0.5 + 9*t : 5 + 10*(t-0.5));
+                        v.push(pts[i].x + binorm.x*hw, pts[i].y + binorm.y*hw, pts[i].z + binorm.z*hw);
+                        v.push(pts[i].x - binorm.x*hw, pts[i].y - binorm.y*hw, pts[i].z - binorm.z*hw);
+                    }
+                    m.geometry.setAttribute('position', new THREE.Float32BufferAttribute(v, 3));
+                    const ind = []; for (let i = 0; i < res; i++) ind.push(i*2, i*2+1, i*2+2, i*2+1, i*2+3, i*2+2);
+                    m.geometry.setIndex(ind);
+                } else {
+                    const lp = pts[pts.length-1], te = curve.getTangent(sT + seg);
+                    const h1 = new THREE.Vector3().copy(lp).addScaledVector(binorm, 20), h2 = new THREE.Vector3().copy(lp).addScaledVector(binorm, -20), ht = new THREE.Vector3().copy(lp).addScaledVector(te, 20);
+                    m.geometry.setAttribute('position', new THREE.Float32BufferAttribute([h1.x, h1.y, h1.z, h2.x, h2.y, h2.z, ht.x, ht.y, ht.z], 3));
+                }
+                m.geometry.computeVertexNormals(); m.geometry.attributes.position.needsUpdate = true;
+            }
+            upd(0, b1, false); upd(1, b1, true);
+            let offset = 2;
+            if (link.isExtended && threeObj.children.length >= 4) { upd(2, b2, false); upd(3, b2, true); offset = 4; }
+            if (threeObj.children[offset]) {
+                threeObj.children[offset].position.set(midPoint.x, midPoint.y, midPoint.z);
+            }
+        }
+        /* ========================================================================================== */
+        /* Bucla de animație pentru actualizarea dinamică a legăturilor și rotația automată a camerei */
+        /* ========================================================================================== */
+        const ctrl = Graph.controls();
+        ctrl.autoRotate = true; ctrl.autoRotateSpeed = 0.4;
+        function animate() {
+            ctrl.target.set(0, 0, 0);
+            Graph.graphData().links.forEach(l => { if (l.__threeObj && l.type === "semantic") updateLinkGeometry(l.__threeObj, l); });
+            if (ctrl.autoRotate) {
+                Graph.camera().up.lerp(new THREE.Vector3(0, 1, 0), 0.03);
+                Graph.camera().position.y *= 0.995;
+                Graph.camera().lookAt(0, 0, 0);
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+        /* ================================================== */
+        /* Logica de interacțiune pentru click pe noduri,     */
+        /* afișarea infocardului dinamic și controlul camerei */
+        /* pentru focalizare pe nodul selectat                */
+        /* ================================================== */
+        let lastClick = 0, lastNode = null;
+        Graph.onNodeClick(node => {
+            if (node.isVirtual) return;
+            const now = Date.now();
+            if (lastNode === node && (now - lastClick) < 350) {
+                ctrl.autoRotate = false;
+                const ratio = 1 + 400/Math.hypot(node.x, node.y, node.z);
+                Graph.cameraPosition({ x: node.x * ratio, y: node.y * ratio, z: node.z * ratio }, {x:0, y:0, z:0}, 2000);
+                document.getElementById('card-title').innerText = node.name;
+                document.getElementById('card-body').innerHTML = node.desc || "Detalii pilon semantic.";
+                const linksContainer = document.getElementById('card-links');
+                linksContainer.innerHTML = '';
+                const links = node.links || ["Link 1", "Link 2", "Link 3"];
+                links.forEach(l => {
+                    const pill = document.createElement('div');
+                    pill.className = 'link-pill';
+                    pill.innerText = l;
+                    linksContainer.appendChild(pill);
+                });
+                document.getElementById('info-card').classList.replace('opacity-0', 'opacity-100');
+                document.getElementById('info-card').classList.replace('translate-x-[-120%]', 'translate-x-0');
+            }
+            lastClick = now; lastNode = node;
+        });
+        window.hideInfoCard = () => { document.getElementById('info-card').classList.replace('opacity-100', 'opacity-0'); document.getElementById('info-card').classList.replace('translate-x-0', 'translate-x-[-120%]'); };
+        window.resetCamera = () => { hideInfoCard(); Graph.camera().up.set(0, 1, 0); Graph.cameraPosition({ x: 0, y: 0, z: 900 }, { x: 0, y: 0, z: 0 }, 2000); ctrl.autoRotate = true; };
+        window.toggleRotation = () => { ctrl.autoRotate = !ctrl.autoRotate; document.getElementById('rotation-btn').innerText = ctrl.autoRotate ? "[ Stop Rotație ]" : "[ Start Rotație ]"; };
+    </script>
+</body>
+</html>
