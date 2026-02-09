@@ -110,6 +110,7 @@ body {
     </style>
 </head>
 <body>
+  <div id="stage">
 
     <div class="absolute top-0 left-0 z-10 w-full h-full pointer-events-none flex flex-col justify-between p-8">
         <!-- ================== -->
@@ -410,6 +411,8 @@ body {
         window.resetCamera = () => { hideInfoCard(); Graph.camera().up.set(0, 1, 0); Graph.cameraPosition({ x: 0, y: 0, z: 900 }, { x: 0, y: 0, z: 0 }, 2000); ctrl.autoRotate = true; };
         window.toggleRotation = () => { ctrl.autoRotate = !ctrl.autoRotate; document.getElementById('rotation-btn').innerText = ctrl.autoRotate ? "[ Stop Rotație ]" : "[ Start Rotație ]"; };
     </script>
+  </div>
 </body>
 
 </html>
+
