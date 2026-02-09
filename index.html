@@ -243,55 +243,37 @@
             .linkWidth(link => link.type === "structural" ? 3 : 0)
             .linkColor(link => link.type === "structural" ? "rgba(255, 255, 255, 0.9)" : "transparent")
             /* Configurarea relațiilor semantice cu atribute vizuale distincte */
-           
             .linkThreeObject(link => {
-    if (link.type !== "semantic") return null;
-    const group = new THREE.Group();
-    const mat = new THREE.MeshBasicMaterial({ 
-        color: 0xffffff, 
-        transparent: true, 
-        opacity: 0.4, 
-        side: THREE.DoubleSide, 
-        depthWrite: false 
-    });
-
-    // Detectăm dacă legătura este pe "ecuator" (între nodurile bazei)
-    const isHorizontal = !['zenit', 'nadir'].includes(link.source.id) && 
-                         !['zenit', 'nadir'].includes(link.target.id);
-
-    if (isHorizontal) {
-        // --- REZOLVARE PENTRU CELE 3 SĂGEȚI ORIZONTALE ---
-        // Folosim un fragment de cilindru care "mimează" curbura sferei la ecuator
-        const radius = 210; // Trebuie să fie egală cu raza sferei virtuale
-        const height = 10;  // Această înălțime forțează vizibilitatea în plan orizontal
-        const arc = 0.15;   // Lungimea săgeții pe sferă
-        
-        const geo = new THREE.CylinderGeometry(radius, radius, height, 12, 1, true, -arc/2, arc);
-        const mesh = new THREE.Mesh(geo, mat);
-        
-        // Îl rotim să fie pe orbită
-        mesh.rotation.y = Math.atan2(link.source.x, link.source.z);
-        group.add(mesh);
-    } else {
-        // --- REZOLVARE PENTRU CELELALTE 6 SĂGEȚI (Zenit/Nadir -> Bază) ---
-        // Acestea rămân pliate pe sferă folosind BufferGeometry-ul existent
-        // care calculează arcul de cerc pe verticală
-        const mesh1 = new THREE.Mesh(new THREE.BufferGeometry(), mat);
-        const mesh2 = new THREE.Mesh(new THREE.BufferGeometry(), mat);
-        group.add(mesh1, mesh2);
-    }
-
-    // Eticheta (Sprite) - rămâne mereu spre privitor
-    if (link.label) {
-        // ... codul de etichetă ...
-        group.add(labelSprite);
-    }
-
-    return group;
-})
-
-
-
+                if (link.type !== "semantic") return null;
+                const group = new THREE.Group();
+                const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.4, side: THREE.DoubleSide, depthWrite: false });
+                
+                group.add(new THREE.Mesh(new THREE.BufferGeometry(), mat), new THREE.Mesh(new THREE.BufferGeometry(), mat));
+                if (link.isExtended) group.add(new THREE.Mesh(new THREE.BufferGeometry(), mat), new THREE.Mesh(new THREE.BufferGeometry(), mat));
+                
+                if (link.label) {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 1024; canvas.height = 256; 
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    // Font 90px (80% din valoarea anterioara de 112px)
+                    ctx.font = 'bold 90px Inter';
+                    ctx.fillStyle = LINK_LABEL_COLOR;
+                    ctx.fillText(link.label, 512, 128);
+                    
+                    const labelSprite = new THREE.Sprite(new THREE.SpriteMaterial({ 
+                        map: new THREE.CanvasTexture(canvas), 
+                        transparent: true, 
+                        opacity: 1.0, 
+                        depthTest: false, 
+                        depthWrite: false 
+                    }));
+                    labelSprite.scale.set(205, 51, 1);
+                    labelSprite.renderOrder = 120; 
+                    group.add(labelSprite);
+                }
+                return group;
+            })
             .linkPositionUpdate((threeObj, { start, end }, link) => {
                 if (link.type !== "semantic") return false;
                 threeObj.userData.vStart = new THREE.Vector3(start.x, start.y, start.z);
