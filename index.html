@@ -57,6 +57,16 @@ body {
   height: 100%;
 }
 
+/* Glass background for panels (infocards + buttons) */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+
         .close-btn { transition: all 0.2s; cursor: pointer; pointer-events: auto; }
         .close-btn:hover { color: #ef4444; transform: scale(1.1); }
 
@@ -112,7 +122,7 @@ body {
 <body>
   <div id="stage">
 
-    <div class="absolute top-0 left-0 z-10 w-full h-full pointer-events-none flex flex-col justify-between p-8">
+    <div id="ui-layer" class="pointer-events-none flex flex-col justify-between p-8 z-10">
         <!-- ================== -->
         <!-- Infocard Permanent -->
         <!-- ================== -->
@@ -311,6 +321,18 @@ body {
                 updateLinkGeometry(threeObj, link);
                 return true;
             });
+        // --- Keep the 3D canvas synced with the centered stage (no refresh needed) ---
+        const stageEl = document.getElementById('stage');
+
+        function resizeGraphToStage() {
+            if (!stageEl) return;
+            Graph.width(stageEl.clientWidth);
+            Graph.height(stageEl.clientHeight);
+        }
+
+        window.addEventListener('resize', resizeGraphToStage);
+        resizeGraphToStage();
+
         /* ===================================================================================================================== */
         /* Funcție pentru actualizarea dinamică a geometriei legăturilor semantice, inclusiv curbele și poziționarea etichetelor */
         /* ===================================================================================================================== */    
@@ -415,4 +437,3 @@ body {
 </body>
 
 </html>
-
