@@ -16,7 +16,7 @@
             overflow: hidden; 
             background-color: #000000; 
             font-family: 'Inter', sans-serif;
-            /* until we move everything to Ad Augusta platform, we can use this background image as a placeholder for the immersive environment */
+            /* until we move everything to Ad Augusta platform, we can use this background image as a background for the immersive environment */
             background-image: url('https://opera-phd.org/wp-content/uploads/2025/12/PKG-2-1920-black.jpg');
             background-size: cover; 
             background-repeat: no-repeat;
@@ -104,7 +104,7 @@
                     <div class="border-t border-white/10 pt-4 mt-4">
                         <p class="text-[11px] text-gray-300 leading-normal italic mb-2">
                             Modulul-pivot al sesiunii interactive de instruire.
-                            <br>lector dr. arh. Adrian Vidrașcu
+                            <br>lect. dr. arh. Adrian Vidrașcu
                         </p>
                         <p class="text-[9px] text-gray-400 font-mono tracking-[0.2em] uppercase opacity-100">
                             12 februarie 2026
@@ -163,13 +163,25 @@
             nadirExt: { x: 0, y: -216, z: 0 }, // nod virtual pentru extinderea relației verticale
             zenithExt: { x: 0, y: 216, z: 0 } // nod virtual pentru extinderea relației verticale
         };
-
+        
+        /* ================================================== */
+        /* Secțiunea de conținut pentru ________NODURI_______ */
+        /* ================================================== */
         const graphData = {
             nodes: [
-                { id: 1, name: "Evoluția", fx: coords.nadir.x, fy: coords.nadir.y, fz: coords.nadir.z, rows: ["Evoluția"], desc: "Analiza traiectoriei istorice și a mutațiilor paradigmatice în gestiunea cunoașterii.", links: ["Link 1", "Link 2", "Link 3"] },
+                { id: 1, name: "Evoluția", fx: coords.nadir.x, fy: coords.nadir.y, fz: coords.nadir.z, rows: ["Evoluția"], desc: "Analiza traiectoriei istorice și a mutațiilor paradigmatice în gestiunea cunoașterii. Apariția conceptelor, metodelor și instrumentelor de bază.", links: ["Link 1", "Link 2", "Link 3"] },
                 { id: 2, name: "Topologia", fx: coords.base1.x, fy: coords.base1.y, fz: coords.base1.z, rows: ["Topologia"], desc: "<ul><li><strong>Zettelkasten</strong>: Literaturzettel, Folgezettel, note temporare, Register</li><li><strong>PARA</strong> (Tiago Forte)</li><li><strong>ACE</strong> (Nick Milo)</li></ul>", links: ["Link 1", "Link 2", "Link 3"] },
-                { id: 3, name: "Metodele și instrumentele", fx: coords.base2.x, fy: coords.base2.y, fz: coords.base2.z, rows: ["Metodele și", "instrumentele"], desc: "Sisteme operaționale de tip Personal Knowledge Management (PKM) și metodologii avansate de indexare.", links: ["Link 1", "Link 2", "Link 3"] },
-                { id: 4, name: "Fluxul de lucru", fx: coords.base3.x, fy: coords.base3.y, fz: coords.base3.z, rows: ["Fluxul de", "lucru"], desc: "<ul><li>Luhman, importanța procesului</li><li><strong>CODE</strong> (Tiago Forte)</li><li><strong>ARC</strong> (Nick Milo)</li><li><strong>ABC</strong> (Acquire, Build, Create)</li></ul>", links: ["Link 1", "Link 2", "Link 3"] },
+                { id: 3, name: "Metodele și instrumentele",
+                     fx: coords.base2.x, fy: coords.base2.y, fz: coords.base2.z, 
+                     rows: ["Metodele și", "instrumentele"], 
+                     desc: "Sisteme operaționale de tip Personal Knowledge Management (PKM). De la hârtie la instrumente digitale. Metode avansate de studiu; marginalia, Adler, Luhmann. Emergența ideilor. Gândire vizuală.", 
+                      links: [
+                        { label: "Gândire vizuală", url: "https://opera-phd.github.io/ad-augusta-1-test-1/vt" },
+                        { label: "Link 2", url: "#" },
+                        { label: "Link 3", url: "#" }
+  ]
+                    },
+                { id: 4, name: "Fluxul de lucru", fx: coords.base3.x, fy: coords.base3.y, fz: coords.base3.z, rows: ["Fluxul de", "lucru"], desc: "<ul><li>Luhman, importanța procesului; variate abordări contemporane</li><li><strong>CODE</strong> (Tiago Forte)</li><li><strong>ARC</strong> (Nick Milo)</li><li><strong>ABC</strong> (Acquire, Build, Create)</li></ul>", links: ["Link 1", "Link 2", "Link 3"] },
                 { id: 5, name: "Principiile fundamentale", fx: coords.zenith.x, fy: coords.zenith.y, fz: coords.zenith.z, rows: ["Principiile", "fundamentale"], desc: "Axiomele de bază și pilonii etici ai cercetării academice contemporane în era AI.", links: ["Link 1", "Link 2", "Link 3"] },
                 { id: 8, fx: coords.nadirExt.x, fy: coords.nadirExt.y, fz: coords.nadirExt.z, isVirtual: true },
                 { id: 9, fx: coords.zenithExt.x, fy: coords.zenithExt.y, fz: coords.zenithExt.z, isVirtual: true }
@@ -282,9 +294,10 @@
                 updateLinkGeometry(threeObj, link);
                 return true;
             });
-        /* ===================================================================================================================== */
-        /* Funcție pentru actualizarea dinamică a geometriei legăturilor semantice, inclusiv curbele și poziționarea etichetelor */
-        /* ===================================================================================================================== */    
+        /* ============================================4=========================== */
+        /* Funcție pentru actualizarea dinamică a geometriei legăturilor semantice, */
+        /* inclusiv curbele și poziționarea etichetelor                             */
+        /* ========================================================================= */    
         function updateLinkGeometry(threeObj, link) {
             const vS = threeObj.userData.vStart, vE = threeObj.userData.vEnd;
             if (!vS || !vE) return;
@@ -384,8 +397,6 @@
     </script>
 </body>
 </html>
-
-
 
 
 
