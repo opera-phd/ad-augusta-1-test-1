@@ -377,15 +377,47 @@
                 Graph.cameraPosition({ x: node.x * ratio, y: node.y * ratio, z: node.z * ratio }, {x:0, y:0, z:0}, 2000);
                 document.getElementById('card-title').innerText = node.name;
                 document.getElementById('card-body').innerHTML = node.desc || "Detalii pilon semantic.";
+                
+                /* insert the links option for cards */
                 const linksContainer = document.getElementById('card-links');
                 linksContainer.innerHTML = '';
-                const links = node.links || ["Link 1", "Link 2", "Link 3"];
+
+                const links = node.links || [
+                { label: "Link 1", url: null },
+                { label: "Link 2", url: null },
+                { label: "Link 3", url: null }
+                ];
+
                 links.forEach(l => {
-                    const pill = document.createElement('div');
-                    pill.className = 'link-pill';
-                    pill.innerText = l;
-                    linksContainer.appendChild(pill);
-                });
+                // Support both old string links and new {label,url} links
+                const label = (typeof l === "string") ? l : (l.label || "Link");
+                const url   = (typeof l === "string") ? null : (l.url || null);
+
+                  if (url && url !== "#") {
+                const a = document.createElement('a');
+                a.className = 'link-pill';
+                a.textContent = label;
+                a.href = url;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                linksContainer.appendChild(a);
+                } else {
+                // Placeholder / disabled pill
+                const span = document.createElement('span');
+                span.className = 'link-pill';
+                span.textContent = label;
+
+                // Make placeholders look disabled and not clickable
+                span.style.opacity = "0.45";
+                span.style.cursor = "not-allowed";
+                span.style.pointerEvents = "none";
+
+                linksContainer.appendChild(span);
+                }
+        });
+
+
+                
                 document.getElementById('info-card').classList.replace('opacity-0', 'opacity-100');
                 document.getElementById('info-card').classList.replace('translate-x-[-120%]', 'translate-x-0');
             }
